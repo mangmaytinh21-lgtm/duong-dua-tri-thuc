@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1736">
+<title>Đường đua tri thức – Khám phá văn hóa Đắk Lắk</title>
+<style>
+:root{--navy:#0b1736;--blue:#183a70;--cyan:#54e3e8;--yellow:#ffd166;--pink:#ff6b9a;--green:#4ade80;--white:#f8fbff;--muted:#b8c7e6}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 15% 10%,#234c86 0,transparent 32%),radial-gradient(circle at 90% 80%,#4a236d 0,transparent 30%),var(--navy);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--white);padding:22px}
+button{font:inherit;cursor:pointer}
+.app{max-width:1100px;margin:auto}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.04em}
+.brand-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:15px;background:linear-gradient(135deg,var(--cyan),#7b8cff);color:#09162f;font-size:25px;box-shadow:0 8px 25px #54e3e833}
+.tag{border:1px solid #ffffff26;border-radius:999px;padding:8px 13px;color:var(--muted);font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(285px,.8fr);gap:18px}
+.panel{background:linear-gradient(145deg,#17294cdd,#101d3bdd);border:1px solid #ffffff1c;border-radius:25px;box-shadow:0 18px 50px #0003;overflow:hidden}
+.hero{padding:25px}
+.eyebrow{color:var(--cyan);font-size:12px;font-weight:900;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(30px,5vw,52px);line-height:1.02;margin:10px 0 12px;letter-spacing:-.04em}
+h1 span{color:var(--yellow)}
+.intro{color:var(--muted);line-height:1.6;margin:0 0 22px;max-width:560px}
+.scene{height:245px;position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(#73d9f1 0%,#c3f2f4 57%,#75c875 57%,#4a9e65 100%);border:1px solid #ffffff2b}
+.sun{position:absolute;width:57px;height:57px;border-radius:50%;background:#fff3a3;top:22px;right:13%;box-shadow:0 0 35px #fff3a388}
+.cloud{position:absolute;font-size:40px;filter:drop-shadow(0 5px 1px #3e8fa333);animation:float 5s ease-in-out infinite}
+.c1{top:26px;left:10%}.c2{top:65px;left:52%;animation-delay:-2s}
+.hill{position:absolute;bottom:66px;width:240px;height:120px;border-radius:50% 50% 0 0;background:#4eb77d}
+.h1{left:-40px}.h2{right:-30px;background:#31966e;bottom:55px}
+.track{position:absolute;bottom:0;height:72px;width:100%;background:#37445c;transform:perspective(130px) rotateX(5deg);border-top:6px solid #e5f3e4}
+.track:after{content:"";position:absolute;top:31px;left:0;width:200%;border-top:5px dashed #fff1bd;animation:road 2s linear infinite}
+.runner{position:absolute;z-index:3;bottom:43px;left:17%;font-size:57px;filter:drop-shadow(0 5px 2px #20364d55);animation:bob .55s ease-in-out infinite alternate}
+.obstacle{position:absolute;z-index:2;bottom:48px;right:22%;font-size:42px}
+.flag{position:absolute;right:8%;bottom:63px;font-size:50px}
+.scene-label{position:absolute;top:12px;left:12px;border-radius:10px;background:#102344cc;color:#fff;padding:7px 10px;font-size:11px;font-weight:800;letter-spacing:.1em}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:15px}
+.stat{background:#ffffff0a;border:1px solid #ffffff12;border-radius:15px;padding:12px}
+.stat small{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.stat strong{font-size:21px}
+.side{padding:22px;display:flex;flex-direction:column;gap:18px}
+.side h2{margin:0;font-size:21px}
+.rules{display:grid;gap:12px}
+.rule{display:flex;gap:11px;align-items:flex-start;color:var(--muted);font-size:14px;line-height:1.45}
+.rule-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:11px;background:#ffffff10;font-size:17px}
+.primary{border:0;border-radius:14px;padding:15px 18px;background:linear-gradient(100deg,var(--yellow),#ffad62);color:#17203b;font-weight:950;box-shadow:0 8px 22px #ffd16626;transition:transform .18s,filter .18s}
+.primary:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.secondary{border:1px solid #ffffff30;background:#ffffff0c;color:var(--white);border-radius:13px;padding:12px 15px;font-weight:750}
+.mini-note{font-size:12px;color:#92a7ce;line-height:1.5}
+.game-panel{display:none;padding:23px}
+.game-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:13px}
+.game-head h2{font-size:22px;margin:0}
+.progress-wrap{height:9px;background:#ffffff14;border-radius:999px;overflow:hidden;margin:12px 0 18px}
+.progress{height:100%;width:0;background:linear-gradient(90deg,var(--cyan),#a6ffb8);border-radius:999px;transition:width .35s}
+.play-scene{height:155px;border-radius:17px;position:relative;overflow:hidden;background:linear-gradient(#80dff2 0%,#d2f5f0 62%,#61bd7c 62%);margin-bottom:18px}
+.play-scene .track{height:45px}
+.play-scene .runner{font-size:43px;bottom:24px;left:12%}
+.play-scene .obstacle{font-size:31px;bottom:28px;right:19%}
+.play-scene .flag{font-size:35px;bottom:39px}
+.question-card{background:#ffffff08;border:1px solid #ffffff1a;border-radius:19px;padding:20px}
+.question-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.q-number{font-size:12px;color:var(--cyan);font-weight:900;letter-spacing:.12em}
+.points-pill{font-size:12px;color:var(--yellow);font-weight:850;background:#ffd16615;border:1px solid #ffd16640;padding:6px 9px;border-radius:999px}
+.question{font-size:clamp(18px,2.7vw,24px);line-height:1.35;margin:0 0 17px;font-weight:850}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.answer{display:flex;align-items:center;gap:11px;text-align:left;padding:13px;background:#ffffff08;border:1px solid #ffffff1e;border-radius:13px;color:var(--white);min-height:61px;transition:.18s}
+.answer:hover:not(:disabled){border-color:var(--cyan);background:#54e3e812;transform:translateY(-1px)}
+.letter{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:9px;background:#ffffff12;font-weight:900;color:var(--cyan)}
+.answer.correct{border-color:var(--green);background:#4ade8018}.answer.correct .letter{background:var(--green);color:#10233b}
+.answer.wrong{border-color:var(--pink);background:#ff6b9a18}.answer.wrong .letter{background:var(--pink);color:#fff}
+.answer:disabled{cursor:default}
+.feedback{display:none;margin-top:14px;border-radius:13px;padding:13px 14px;line-height:1.5;font-size:14px}
+.feedback.good{display:block;background:#4ade8013;border:1px solid #4ade8040;color:#caffd9}
+.feedback.bad{display:block;background:#ff6b9a13;border:1px solid #ff6b9a44;color:#ffd4e1}
+.action-row{display:flex;justify-content:flex-end;gap:10px;margin-top:14px}
+.result{display:none;text-align:center;padding:32px 22px}
+.result-emoji{font-size:70px;line-height:1.2}
+.result h2{font-size:clamp(28px,4vw,42px);margin:10px 0}
+.result p{color:var(--muted);line-height:1.6}
+.result-score{font-size:56px;font-weight:1000;color:var(--yellow);letter-spacing:-.05em}
+.result-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:18px 0 23px}
+.result-stats span{padding:10px 14px;background:#ffffff0c;border:1px solid #ffffff15;border-radius:12px}
+.footer{text-align:center;color:#7187b1;font-size:12px;margin:18px 0 4px}
+.toast{position:fixed;inset:0;display:none;place-items:center;background:#050d20b8;backdrop-filter:blur(7px);z-index:20;padding:20px}
+.toast-box{max-width:450px;width:100%;background:#15284a;border:1px solid #ffffff25;border-radius:23px;padding:28px;text-align:center;box-shadow:0 20px 70px #0008}
+.toast-box .big{font-size:54px}
+.toast-box h2{margin:7px 0}
+.toast-box p{color:var(--muted);line-height:1.6}
+.toast-box .primary{width:100%;margin-top:10px}
+@keyframes road{from{transform:translateX(0)}to{transform:translateX(-100px)}}
+@keyframes bob{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-7px) rotate(3deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@media(max-width:800px){body{padding:12px}.layout{grid-template-columns:1fr}.hero{padding:19px}.side{padding:19px}.scene{height:210px}.tag{display:none}}
+@media(max-width:480px){.answers{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:18px}.game-panel{padding:14px}.question-card{padding:15px}.answer{min-height:54px}.brand{font-size:13px}.brand-icon{width:40px;height:40px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brand-icon">🏁</div><div>ĐƯỜNG ĐUA TRI THỨC<small style="display:block;color:#9eb4dc;font-size:10px;letter-spacing:.13em;margin-top:2px">KHÁM PHÁ VĂN HÓA ĐẮK LẮK</small></div></div>
+    <div class="tag">🎮 10 thử thách · Tối đa 100 điểm</div>
+  </header>
+  <div class="layout">
+    <main class="panel">
+      <section class="hero" id="home">
+        <div class="eyebrow">Sẵn sàng xuất phát?</div>
+        <h1>Chinh phục <span>đường đua</span><br>tri thức!</h1>
+        <p class="intro">Vượt qua chướng ngại vật, khám phá nét đẹp văn hóa các dân tộc và chinh phục 10 câu hỏi thú vị. Bạn có đủ nhanh và đủ hiểu biết để về đích không?</p>
+        <div class="scene" aria-label="Minh họa đường đua">
+          <div class="sun"></div><div class="cloud c1">☁️</div><div class="cloud c2">☁️</div>
+          <div class="hill h1"></div><div class="hill h2"></div>
+          <div class="scene-label">MÀN ĐUA 01 · KHỞI ĐỘNG</div>
+          <div class="runner">🏃🏻</div><div class="obstacle">🪵</div><div class="flag">🏁</div><div class="track"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><small>THỬ THÁCH</small><strong>10 câu</strong></div>
+          <div class="stat"><small>MỖI CÂU ĐÚNG</small><strong>+10 điểm</strong></div>
+          <div class="stat"><small>PHẦN THƯỞNG</small><strong>🏆 Cúp vàng</strong></div>
+        </div>
+      </section>
+      <section class="game-panel" id="game">
+        <div class="game-head"><h2>🚩 Đường đua của bạn</h2><strong id="scoreText" style="color:var(--yellow)">⭐ 0 điểm</strong></div>
+        <div style="display:flex;justify-content:space-between;color:var(--muted);font-size:12px"><span id="progressText">CÂU 1 / 10</span><span id="progressPct">10%</span></div>
+        <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+        <div class="play-scene"><div class="sun" style="width:38px;height:38px;top:12px;right:12%"></div><div class="cloud c1">☁️</div><div class="hill h1"></div><div class="hill h2"></div><div class="runner" id="gameRunner">🏃🏻</div><div class="obstacle" id="gameObstacle">🪵</div><div class="flag">🏁</div><div class="track"></div></div>
+        <div class="question-card">
+          <div class="question-top"><span class="q-number" id="qNumber">THỬ THÁCH 01</span><span class="points-pill">+10 ĐIỂM / CÂU ĐÚNG</span></div>
+          <p class="question" id="questionText"></p>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <div class="action-row"><button class="primary" id="nextBtn" style="display:none">Tiếp tục ➜</button></div>
+        </div>
+      </section>
+      <section class="result" id="result">
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <div class="eyebrow">HOÀN THÀNH ĐƯỜNG ĐUA</div>
+        <h2 id="resultTitle">Bạn thật tuyệt vời!</h2>
+        <div class="result-score" id="finalScore">100/100</div>
+        <p id="resultMessage"></p>
+        <div class="result-stats"><span id="correctCount">✅ 10 câu đúng</span><span id="wrongCount">❌ 0 câu sai</span></div>
+        <button class="primary" id="restartBtn">🔄 Chơi lại từ đầu</button>
+      </section>
+    </main>
+    <aside class="panel side" id="side">
+      <h2>🎯 Luật chơi</h2>
+      <div class="rules">
+        <div class="rule"><div class="rule-icon">1️⃣</div><div>Đọc kỹ câu hỏi và chọn <b>một đáp án A, B, C hoặc D</b>.</div></div>
+        <div class="rule"><div class="rule-icon">⭐</div><div>Trả lời đúng được <b>cộng 10 điểm</b> và nhân vật vượt qua chướng ngại vật.</div></div>
+        <div class="rule"><div class="rule-icon">🛑</div><div>Trả lời sai, lượt chơi kết thúc. Hãy xem đáp án và thử sức lại nhé!</div></div>
+        <div class="rule"><div class="rule-icon">🏆</div><div>Trả lời đúng cả 10 câu để đạt tối đa <b>100 điểm</b>.</div></div>
+      </div>
+      <button class="primary" id="startBtn">BẮT ĐẦU CHƠI 🚀</button>
+      <div class="mini-note">💡 Mẹo: Hãy nhớ những điều thú vị về nhạc cụ, lễ hội, trang phục và di sản văn hóa Tây Nguyên.</div>
+    </aside>
+  </div>
+  <div class="footer">Một hành trình nhỏ · Khám phá những giá trị văn hóa đặc sắc của các dân tộc</div>
+</div>
+<div class="toast" id="wrongToast" role="dialog" aria-modal="true" aria-labelledby="toastTitle">
+  <div class="toast-box"><div class="big">💥</div><h2 id="toastTitle">Ôi, chưa chính xác!</h2><p id="toastMessage"></p><button class="primary" id="toastRestart">Thử lại từ đầu 🔄</button></div>
+</div>
+<script>
+const questions = [
+ {q:"Đàn goong thường được chơi bằng cách nào?",a:["Thổi hơi vào ống","Gõ vào mặt trống","Gảy dây đàn","Lắc các hạt kim loại"],correct:2,explain:"Đàn goong là nhạc cụ dây, được chơi bằng cách gảy dây đàn."},
+ {q:"Lễ cúng bến nước có ý nghĩa văn hóa gắn với điều gì?",a:["Trân trọng nguồn nước và cầu mong nguồn nước phục vụ cuộc sống cộng đồng","Tổ chức thi đấu thể thao","Đánh dấu việc buôn bán nông sản","Thay thế các hoạt động sản xuất"],correct:0,explain:"Lễ cúng bến nước thể hiện sự trân trọng nguồn nước và mong nguồn nước đem lại cuộc sống tốt đẹp cho cộng đồng."},
+ {q:"Khi tìm hiểu tên gọi và phân loại các bộ chiêng của từng dân tộc, học sinh nên làm gì?",a:["Gán mọi tên gọi cho cùng một dân tộc","Chỉ dựa vào suy đoán cá nhân","Đối chiếu tài liệu chuyên môn và tham khảo ý kiến nghệ nhân","Bỏ qua sự khác biệt giữa các cộng đồng"],correct:2,explain:"Cần đối chiếu tài liệu đáng tin cậy và tham khảo ý kiến nghệ nhân để tôn trọng sự đa dạng văn hóa."},
+ {q:"Lễ hội “Trống đôi, cồng ba, chiêng năm” gắn với cộng đồng dân tộc nào?",a:["Tày và Nùng","Chăm H’roi và Ba Na","Thái và Mường","Dao và H’Mông"],correct:1,explain:"Theo tài liệu câu hỏi, lễ hội này gắn với cộng đồng Chăm H’roi và Ba Na."},
+ {q:"Nhà dài là kiểu nhà truyền thống tiêu biểu của dân tộc nào ở Tây Nguyên?",a:["Tày","Ê Đê","Nùng","Dao"],correct:1,explain:"Nhà dài là một kiểu nhà truyền thống tiêu biểu của người Ê Đê ở Tây Nguyên."},
+ {q:"Sông Hinh là địa bàn có những giá trị văn hóa dân gian đặc sắc của các cộng đồng dân tộc thiểu số ở khu vực nào trước đây?",a:["Đồng bằng Bắc Bộ","Đông Nam Bộ","Phú Yên","Đồng bằng sông Cửu Long"],correct:2,explain:"Trong bộ câu hỏi này, đáp án được cung cấp là Phú Yên."},
+ {q:"Không gian văn hóa Cồng chiêng Tây Nguyên được UNESCO ghi danh là Kiệt tác di sản truyền khẩu và phi vật thể của nhân loại vào năm nào?",a:["1995","2000","2005","2015"],correct:2,explain:"Không gian văn hóa Cồng chiêng Tây Nguyên được UNESCO ghi danh vào năm 2005."},
+ {q:"Xoang là hình thức nghệ thuật dân gian nào phổ biến trong sinh hoạt văn hóa của một số dân tộc Tây Nguyên?",a:["Điệu múa dân gian","Nghề đan lát","Nghề làm gốm","Hình thức kể chuyện bằng chữ viết"],correct:0,explain:"Xoang là điệu múa dân gian gắn với sinh hoạt văn hóa của một số cộng đồng Tây Nguyên."},
+ {q:"Trang phục truyền thống của các dân tộc thiểu số thường thể hiện điều gì?",a:["Chỉ phản ánh sở thích cá nhân","Bản sắc văn hóa qua hoa văn, màu sắc, chất liệu và cách trang trí","Không có liên hệ với lịch sử cộng đồng","Hoàn toàn giống nhau giữa các dân tộc"],correct:1,explain:"Hoa văn, màu sắc, chất liệu và cách trang trí góp phần thể hiện bản sắc văn hóa của mỗi cộng đồng."},
+ {q:"Ngoài các dân tộc cư trú lâu đời, tỉnh Đắk Lắk còn có những cộng đồng dân tộc từ các vùng miền khác đến sinh sống như:",a:["Tày, Nùng, Thái","Chỉ có người Kinh","Chỉ có người Ê Đê","Không có cộng đồng dân tộc khác"],correct:0,explain:"Tài liệu cung cấp nêu các cộng đồng Tày, Nùng, Thái cùng sinh sống tại Đắk Lắk."}
+];
+let index=0, score=0, correctCount=0, locked=false;
+const $=id=>document.getElementById(id);
+function show(id){$(id).style.display="block"}
+function hide(id){$(id).style.display="none"}
+function startGame(){
+ index=0;score=0;correctCount=0;locked=false;
+ hide("home");show("game");hide("result");$("side").style.display="none";hide("wrongToast");
+ renderQuestion();window.scrollTo({top:0,behavior:"smooth"});
+}
+function renderQuestion(){
+ locked=false;const item=questions[index];
+ $("qNumber").textContent="THỬ THÁCH "+String(index+1).padStart(2,"0");
+ $("questionText").textContent=item.q;
+ $("scoreText").textContent="⭐ "+score+" điểm";
+ $("progressText").textContent="CÂU "+(index+1)+" / "+questions.length;
+ $("progressPct").textContent=Math.round((index+1)/questions.length*100)+"%";
+ $("progress").style.width=((index+1)/questions.length*100)+"%";
+ $("gameObstacle").textContent=["🪵","🪨","🌵","🛢️","🌳"][index%5];
+ $("gameRunner").style.animation="none";void $("gameRunner").offsetWidth;$("gameRunner").style.animation="bob .55s ease-in-out infinite alternate";
+ $("feedback").className="feedback";$("feedback").textContent="";hide("nextBtn");
+ $("answers").innerHTML="";
+ item.a.forEach((answer,i)=>{
+  const btn=document.createElement("button");btn.className="answer";
+  const letter=document.createElement("span");letter.className="letter";letter.textContent="ABCD"[i];
+  const text=document.createElement("span");text.textContent=answer;
+  btn.append(letter,text);btn.addEventListener("click",()=>chooseAnswer(i,btn));$("answers").appendChild(btn);
+ });
+}
+function chooseAnswer(choice,btn){
+ if(locked)return;locked=true;
+ const item=questions[index];const buttons=[...$("answers").querySelectorAll("button")];
+ buttons.forEach((b,i)=>{b.disabled=true;if(i===item.correct)b.classList.add("correct")});
+ if(choice===item.correct){
+  score+=10;correctCount++;$("scoreText").textContent="⭐ "+score+" điểm";
+  $("gameRunner").style.transform="translateX(75px)";$("gameRunner").style.transition="transform .45s";
+  $("feedback").className="feedback good";$("feedback").textContent="🎉 Chính xác! Cộng 10 điểm và được đi tiếp. "+item.explain;
+  $("nextBtn").textContent=index===questions.length-1?"Về đích 🏆":"Tiếp tục ➜";show("nextBtn");
+ }else{
+  btn.classList.add("wrong");
+  $("feedback").className="feedback bad";$("feedback").textContent="💡 Chưa chính xác. Đáp án đúng là "+ "ABCD"[item.correct]+". "+item.a[item.correct]+". "+item.explain;
+  $("toastMessage").textContent="Bạn đạt "+score+" điểm và trả lời đúng "+correctCount+"/"+questions.length+" câu. "+item.explain;
+  setTimeout(()=>show("wrongToast"),700);
+ }
+}
+function nextQuestion(){
+ if(index<questions.length-1){index++;renderQuestion()}else showResult(true);
+}
+function showResult(finished){
+ hide("game");show("result");$("side").style.display="flex";
+ $("resultEmoji").textContent=score===100?"🏆":score>=60?"🥇":"💪";
+ $("resultTitle").textContent=score===100?"Xuất sắc! Bạn đã về đích!":score>=60?"Tuyệt vời, bạn đã rất cố gắng!":"Đừng bỏ cuộc nhé!";
+ $("finalScore").textContent=score+"/100";
+ $("resultMessage").textContent=finished?"Bạn đã hoàn thành cả 10 thử thách khám phá văn hóa. Hãy tiếp tục tìm hiểu và trân trọng những giá trị văn hóa đặc sắc!":"";
+ $("correctCount").textContent="✅ "+correctCount+" câu đúng";
+ $("wrongCount").textContent="❌ "+(questions.length-correctCount)+" câu chưa đúng";
+ $("startBtn").textContent="CHƠI LẠI 🚀";
+ window.scrollTo({top:0,behavior:"smooth"});
+}
+$("startBtn").addEventListener("click",startGame);
+$("nextBtn").addEventListener("click",nextQuestion);
+$("restartBtn").addEventListener("click",startGame);
+$("toastRestart").addEventListener("click",startGame);
+document.addEventListener("keydown",e=>{if($("game").style.display==="block"&&!locked){const i={"1":0,"2":1,"3":2,"4":3}[e.key];if(i!==undefined){const b=$("answers").querySelectorAll("button")[i];if(b)b.click()}}});
+</script>
+</body>
+</html>
