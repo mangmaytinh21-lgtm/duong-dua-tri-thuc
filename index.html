@@ -90,6 +90,29 @@ h1 span{color:var(--yellow)}
 @keyframes road{from{transform:translateX(0)}to{transform:translateX(-100px)}}
 @keyframes bob{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-7px) rotate(3deg)}}
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+
+/* Nâng cấp hoạt ảnh nhân vật và hiệu ứng */
+.runner{transform-origin:center bottom;animation:runnerRun .34s ease-in-out infinite alternate, runnerHop .72s ease-in-out infinite}
+.runner::after{content:"✨";position:absolute;font-size:18px;right:-10px;top:2px;animation:sparkle .7s ease-in-out infinite alternate}
+.play-scene .runner{animation:runnerRun .28s ease-in-out infinite alternate,runnerHop .66s ease-in-out infinite}
+.scene .obstacle,.play-scene .obstacle{animation:obstaclePulse 1.1s ease-in-out infinite alternate}
+.scene .flag,.play-scene .flag{transform-origin:bottom center;animation:flagWave .55s ease-in-out infinite alternate}
+.scene:before,.play-scene:before{content:"";position:absolute;z-index:1;left:-20%;top:0;width:18%;height:100%;background:linear-gradient(90deg,transparent,#ffffff66,transparent);transform:skewX(-20deg);animation:shine 5s linear infinite;pointer-events:none}
+.scene .runner{z-index:4}
+.scene .obstacle,.play-scene .obstacle{z-index:3}
+@keyframes runnerRun{from{rotate:-5deg}to{rotate:6deg}}
+@keyframes runnerHop{0%,100%{translate:0 0}50%{translate:0 -12px}}
+@keyframes sparkle{from{opacity:.25;scale:.7;rotate:-20deg}to{opacity:1;scale:1.15;rotate:20deg}}
+@keyframes obstaclePulse{from{translate:0 0;rotate:-3deg}to{translate:0 -5px;rotate:3deg}}
+@keyframes flagWave{from{rotate:-4deg}to{rotate:5deg}}
+@keyframes shine{0%{left:-25%}100%{left:120%}}
+.jump-action{animation:bigJump .58s cubic-bezier(.2,.75,.3,1)!important}
+@keyframes bigJump{0%{translate:0 0;scale:1}40%{translate:0 -48px;scale:1.08}100%{translate:110px 0;scale:1}}
+.answer.correct{animation:correctPop .35s ease-out}
+@keyframes correctPop{0%{scale:1}55%{scale:1.025}100%{scale:1}}
+.sound-hint{font-size:11px;color:#92a7ce}
+@media(prefers-reduced-motion:reduce){.runner,.runner::after,.scene .obstacle,.play-scene .obstacle,.scene .flag,.play-scene .flag,.scene:before,.play-scene:before{animation:none!important}}
+
 @media(max-width:800px){body{padding:12px}.layout{grid-template-columns:1fr}.hero{padding:19px}.side{padding:19px}.scene{height:210px}.tag{display:none}}
 @media(max-width:480px){.answers{grid-template-columns:1fr}.stats{gap:7px}.stat{padding:10px}.stat strong{font-size:18px}.game-panel{padding:14px}.question-card{padding:15px}.answer{min-height:54px}.brand{font-size:13px}.brand-icon{width:40px;height:40px}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
@@ -99,7 +122,7 @@ h1 span{color:var(--yellow)}
 <div class="app">
   <header class="topbar">
     <div class="brand"><div class="brand-icon">🏁</div><div>ĐƯỜNG ĐUA TRI THỨC<small style="display:block;color:#9eb4dc;font-size:10px;letter-spacing:.13em;margin-top:2px">KHÁM PHÁ VĂN HÓA ĐẮK LẮK</small></div></div>
-    <div class="tag">🎮 10 thử thách · Tối đa 100 điểm</div>
+    <div style="display:flex;align-items:center;gap:8px"><button class="secondary" id="soundToggle" type="button" aria-pressed="true" title="Bật hoặc tắt âm thanh">🔊 Âm thanh: Bật</button><div class="tag">🎮 10 thử thách · Tối đa 100 điểm</div></div>
   </header>
   <div class="layout">
     <main class="panel">
@@ -151,7 +174,7 @@ h1 span{color:var(--yellow)}
         <div class="rule"><div class="rule-icon">🏆</div><div>Trả lời đúng cả 10 câu để đạt tối đa <b>100 điểm</b>.</div></div>
       </div>
       <button class="primary" id="startBtn">BẮT ĐẦU CHƠI 🚀</button>
-      <div class="mini-note">💡 Mẹo: Hãy nhớ những điều thú vị về nhạc cụ, lễ hội, trang phục và di sản văn hóa Tây Nguyên.</div>
+      <div class="sound-hint">🎵 Nhạc nền, tiếng nhảy, tiếng trả lời đúng/sai và âm thanh về đích. Bạn có thể bật/tắt bằng nút 🔊 phía trên.</div><div class="mini-note">💡 Mẹo: Hãy nhớ những điều thú vị về nhạc cụ, lễ hội, trang phục và di sản văn hóa Tây Nguyên.</div>
     </aside>
   </div>
   <div class="footer">Một hành trình nhỏ · Khám phá những giá trị văn hóa đặc sắc của các dân tộc</div>
@@ -160,6 +183,51 @@ h1 span{color:var(--yellow)}
   <div class="toast-box"><div class="big">💥</div><h2 id="toastTitle">Ôi, chưa chính xác!</h2><p id="toastMessage"></p><button class="primary" id="toastRestart">Thử lại từ đầu 🔄</button></div>
 </div>
 <script>
+
+// Âm thanh được tạo trực tiếp bằng Web Audio API, không cần tải file nhạc ngoài.
+let audioCtx=null, musicTimer=null, musicStep=0, soundOn=true;
+function ensureAudio(){
+  if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;if(AC)audioCtx=new AC();}
+  if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume();
+}
+function tone(freq,duration=.12,type="sine",volume=.045,delay=0){
+  if(!soundOn)return;
+  ensureAudio();if(!audioCtx)return;
+  const now=audioCtx.currentTime+delay,osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  osc.type=type;osc.frequency.setValueAtTime(freq,now);
+  gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(volume,now+.015);
+  gain.gain.exponentialRampToValueAtTime(.0001,now+duration);
+  osc.connect(gain);gain.connect(audioCtx.destination);osc.start(now);osc.stop(now+duration+.02);
+}
+function sfx(name){
+ if(!soundOn)return;
+ if(name==="start"){[523,659,784,1047].forEach((f,i)=>tone(f,.16,"triangle",.045,i*.09));}
+ if(name==="jump"){tone(430,.08,"square",.025);tone(690,.12,"triangle",.04,.07);}
+ if(name==="correct"){[660,830,990,1320].forEach((f,i)=>tone(f,.16,"triangle",.05,i*.075));}
+ if(name==="wrong"){tone(240,.18,"sawtooth",.035);tone(180,.24,"triangle",.04,.15);}
+ if(name==="finish"){[523,659,784,1047,1318].forEach((f,i)=>tone(f,.25,"triangle",.055,i*.12));}
+ if(name==="click"){tone(520,.055,"sine",.022);}
+}
+const melody=[523.25,659.25,783.99,659.25,587.33,698.46,880,698.46,523.25,659.25,783.99,1046.5,880,783.99,659.25,587.33];
+function startMusic(){
+ if(!soundOn||musicTimer)return;
+ ensureAudio();if(!audioCtx)return;
+ musicTimer=setInterval(()=>{
+   if(!soundOn||!audioCtx)return;
+   const f=melody[musicStep%melody.length];
+   tone(f,.19,"triangle",.012);
+   if(musicStep%4===0)tone(f/2,.22,"sine",.009);
+   musicStep++;
+ },230);
+}
+function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null;}}
+function toggleSound(){
+ soundOn=!soundOn;
+ $("soundToggle").textContent=soundOn?"🔊 Âm thanh: Bật":"🔇 Âm thanh: Tắt";
+ $("soundToggle").setAttribute("aria-pressed",String(soundOn));
+ if(soundOn){ensureAudio();startMusic();sfx("click");}else stopMusic();
+}
+
 const questions = [
  {q:"Đàn goong thường được chơi bằng cách nào?",a:["Thổi hơi vào ống","Gõ vào mặt trống","Gảy dây đàn","Lắc các hạt kim loại"],correct:2,explain:"Đàn goong là nhạc cụ dây, được chơi bằng cách gảy dây đàn."},
  {q:"Lễ cúng bến nước có ý nghĩa văn hóa gắn với điều gì?",a:["Trân trọng nguồn nước và cầu mong nguồn nước phục vụ cuộc sống cộng đồng","Tổ chức thi đấu thể thao","Đánh dấu việc buôn bán nông sản","Thay thế các hoạt động sản xuất"],correct:0,explain:"Lễ cúng bến nước thể hiện sự trân trọng nguồn nước và mong nguồn nước đem lại cuộc sống tốt đẹp cho cộng đồng."},
@@ -177,6 +245,7 @@ const $=id=>document.getElementById(id);
 function show(id){$(id).style.display="block"}
 function hide(id){$(id).style.display="none"}
 function startGame(){
+ ensureAudio();if(soundOn){startMusic();sfx("start");}
  index=0;score=0;correctCount=0;locked=false;
  hide("home");show("game");hide("result");$("side").style.display="none";hide("wrongToast");
  renderQuestion();window.scrollTo({top:0,behavior:"smooth"});
@@ -205,12 +274,13 @@ function chooseAnswer(choice,btn){
  const item=questions[index];const buttons=[...$("answers").querySelectorAll("button")];
  buttons.forEach((b,i)=>{b.disabled=true;if(i===item.correct)b.classList.add("correct")});
  if(choice===item.correct){
+  sfx("correct");$("gameRunner").classList.remove("jump-action");void $("gameRunner").offsetWidth;$("gameRunner").classList.add("jump-action");
   score+=10;correctCount++;$("scoreText").textContent="⭐ "+score+" điểm";
   $("gameRunner").style.transform="translateX(75px)";$("gameRunner").style.transition="transform .45s";
   $("feedback").className="feedback good";$("feedback").textContent="🎉 Chính xác! Cộng 10 điểm và được đi tiếp. "+item.explain;
   $("nextBtn").textContent=index===questions.length-1?"Về đích 🏆":"Tiếp tục ➜";show("nextBtn");
  }else{
-  btn.classList.add("wrong");
+  sfx("wrong");btn.classList.add("wrong");
   $("feedback").className="feedback bad";$("feedback").textContent="💡 Chưa chính xác. Đáp án đúng là "+ "ABCD"[item.correct]+". "+item.a[item.correct]+". "+item.explain;
   $("toastMessage").textContent="Bạn đạt "+score+" điểm và trả lời đúng "+correctCount+"/"+questions.length+" câu. "+item.explain;
   setTimeout(()=>show("wrongToast"),700);
@@ -220,6 +290,7 @@ function nextQuestion(){
  if(index<questions.length-1){index++;renderQuestion()}else showResult(true);
 }
 function showResult(finished){
+ if(finished){sfx("finish");}else{sfx("wrong");}
  hide("game");show("result");$("side").style.display="flex";
  $("resultEmoji").textContent=score===100?"🏆":score>=60?"🥇":"💪";
  $("resultTitle").textContent=score===100?"Xuất sắc! Bạn đã về đích!":score>=60?"Tuyệt vời, bạn đã rất cố gắng!":"Đừng bỏ cuộc nhé!";
@@ -230,10 +301,12 @@ function showResult(finished){
  $("startBtn").textContent="CHƠI LẠI 🚀";
  window.scrollTo({top:0,behavior:"smooth"});
 }
+$("soundToggle").addEventListener("click",toggleSound);
 $("startBtn").addEventListener("click",startGame);
 $("nextBtn").addEventListener("click",nextQuestion);
 $("restartBtn").addEventListener("click",startGame);
 $("toastRestart").addEventListener("click",startGame);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopMusic();else if(soundOn&&$("game").style.display==="block")startMusic();});
 document.addEventListener("keydown",e=>{if($("game").style.display==="block"&&!locked){const i={"1":0,"2":1,"3":2,"4":3}[e.key];if(i!==undefined){const b=$("answers").querySelectorAll("button")[i];if(b)b.click()}}});
 </script>
 </body>
